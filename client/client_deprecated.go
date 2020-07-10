@@ -10,6 +10,15 @@ import "net/http"
 // highly recommended that you set a version or your client may break if the
 // server is upgraded.
 // Deprecated: use NewClientWithOpts
+//
+//
+// todo NewClient:
+//		为给定的主机和API版本初始化一个新的API客户端。
+//		它使用给定的http客户端作为传输。
+//		它还初始化要添加到每个请求的自定义http标头。
+//
+//		如果版本号为空，则不会发送任何版本信息。 强烈建议您设置版本，否则如果升级服务器，客户端可能会损坏。
+//		不推荐使用：使用NewClientWithOpts
 func NewClient(host string, version string, client *http.Client, httpHeaders map[string]string) (*Client, error) {
 	return NewClientWithOpts(WithHost(host), WithVersion(version), WithHTTPClient(client), WithHTTPHeaders(httpHeaders))
 }

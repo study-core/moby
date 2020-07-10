@@ -8,6 +8,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+//
 func runDaemon(opts *daemonOptions) error {
 	daemonCli := NewDaemonCli()
 	return daemonCli.start(opts)

@@ -69,16 +69,20 @@ type DaemonCli struct {
 }
 
 // NewDaemonCli returns a daemon CLI
+//
+// 创建一个 Docker Daemon Cli
 func NewDaemonCli() *DaemonCli {
 	return &DaemonCli{}
 }
 
+// 启动 Docker Daemon Cli
 func (cli *DaemonCli) start(opts *daemonOptions) (err error) {
 	stopc := make(chan bool)
 	defer close(stopc)
 
 	opts.SetDefaultOptions(opts.flags)
 
+	// 加载 cli 的配置
 	if cli.Config, err = loadDaemonCliConfig(opts); err != nil {
 		return err
 	}
@@ -112,10 +116,13 @@ func (cli *DaemonCli) start(opts *daemonOptions) (err error) {
 	}
 
 	// return human-friendly error before creating files
+	//
+	// 在创建文件之前返回人类友好的错误
 	if runtime.GOOS == "linux" && os.Geteuid() != 0 {
 		return fmt.Errorf("dockerd needs to be started with root. To see how to run dockerd in rootless mode with unprivileged user, see the documentation")
 	}
 
+	// 由于LCOW仅是Windows功能，因此InitLCOW不会执行任何操作
 	system.InitLCOW(cli.Config.Experimental)
 
 	if err := setDefaultUmask(); err != nil {
@@ -183,6 +190,8 @@ func (cli *DaemonCli) start(opts *daemonOptions) (err error) {
 	}, logrus.StandardLogger())
 
 	// Notify that the API is active, but before daemon is set up.
+	//
+	// 在设置守护程序之前，请通知API已处于活动状态。
 	preNotifySystem()
 
 	pluginStore := plugin.NewStore()
@@ -217,6 +226,8 @@ func (cli *DaemonCli) start(opts *daemonOptions) (err error) {
 	// Restart all autostart containers which has a swarm endpoint
 	// and is not yet running now that we have successfully
 	// initialized the cluster.
+	//
+	// 现在, 我们已经成功初始化了集群, 请重新启动所有具有群集端点并且尚未运行的自动启动容器.
 	d.RestartSwarmContainers()
 
 	logrus.Info("Daemon has completed initialization")
@@ -241,6 +252,8 @@ func (cli *DaemonCli) start(opts *daemonOptions) (err error) {
 	go cli.api.Wait(serveAPIWait)
 
 	// after the daemon is done setting up we can notify systemd api
+	//
+	// 守护程序完成设置后，我们可以通知systemd api
 	notifySystem()
 
 	// Daemon is fully initialized and handling API traffic
@@ -350,6 +363,10 @@ func (cli *DaemonCli) stop() {
 // shutdownDaemon just wraps daemon.Shutdown() to handle a timeout in case
 // d.Shutdown() is waiting too long to kill container or worst it's
 // blocked there
+//
+// shutdownDaemon:
+//		只是包装 `daemon.Shutdown()` 来处理超时,
+//		以防 `d.Shutdown()` 等待太长时间而无法杀死容器或更糟糕的是它被阻塞在那里.
 func shutdownDaemon(d *daemon.Daemon) {
 	shutdownTimeout := d.ShutdownTimeout()
 	ch := make(chan struct{})

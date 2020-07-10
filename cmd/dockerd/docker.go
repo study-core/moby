@@ -29,8 +29,12 @@ func newDaemonCommand() (*cobra.Command, error) {
 		SilenceUsage:  true,
 		SilenceErrors: true,
 		Args:          cli.NoArgs,
+
+		// todo  回调的 Run 方法
 		RunE: func(cmd *cobra.Command, args []string) error {
 			opts.flags = cmd.Flags()
+
+			// todo 启动 Docker 守护进程
 			return runDaemon(opts)
 		},
 		DisableFlagsInUseLine: true,
@@ -68,6 +72,7 @@ func init() {
 	honorXDG = rootless.RunningWithRootlessKit()
 }
 
+// TODO Docker 的入口
 func main() {
 	if reexec.Init() {
 		return

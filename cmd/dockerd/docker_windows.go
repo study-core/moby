@@ -9,6 +9,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// 启动在 win 上的 Docker Daemon 实例
 func runDaemon(opts *daemonOptions) error {
 	daemonCli := NewDaemonCli()
 
